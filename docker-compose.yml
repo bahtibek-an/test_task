@@ -1,0 +1,32 @@
+version: "3.0"
+services:
+  postgres:
+    image: postgres
+    env_file: "./.env"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    networks:
+      - db_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  backend:
+    build: ./
+    env_file: "./.env"
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - db_network
+
+networks:
+  db_network:
+    driver: bridge
