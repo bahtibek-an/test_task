@@ -40,7 +40,7 @@ class TreatmentService {
         return this.treatmentRepository.save({
             ...treatment,
             status: TreatmentStatus.COMPLETED,
-            problemSolving,
+            problem_solving: problemSolving,
         });
     }
 
